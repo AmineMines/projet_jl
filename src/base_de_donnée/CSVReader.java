@@ -1,3 +1,5 @@
+package base_de_donnée;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class CSVReader {
+
     public static void main(String[] args) {
         String csvFile = "Fichiers/Krakov/1939351_F2.txt";
         String line = "";
