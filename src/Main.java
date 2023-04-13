@@ -10,7 +10,7 @@ public class Main {
        //a.launch();
         H2DatabaseConnection db = new H2DatabaseConnection();
         db.connection();
-        db.ComputeOrowan(20);
+        db.ComputeOrowan(1,"F3", 1939351);
        db.closeDatabase();
     }
 }

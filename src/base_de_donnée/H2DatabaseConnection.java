@@ -1,7 +1,7 @@
 package base_de_donnée;
 
 import orowan.OrowanLauncher;
-
+import java.util.ArrayList;
 import java.io.*;
 import java.sql.*;
 
@@ -42,7 +42,7 @@ public class H2DatabaseConnection {
         }
     }
 
-    public void ReadCSV_Stand(String path, String tab){
+    public void ReadCSV_Stand(String path, String tab, String stand ){
 
         try {
             // Ouverture du fichier CSV
@@ -50,7 +50,7 @@ public class H2DatabaseConnection {
             BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
             csvReader.readLine();
             // Création de la requête SQL pour l'insertion des données
-            String insertQuery = "INSERT INTO FILE_FORMAT (LP,MATID,XTIME,XLOC,ENTHICK,EXTHICK,ENTENS,EXTENS,ROLLFORCE,FSLIP,DAIAMETER,ROLLED_LENGTH_FOR_WORK_ROLLS,YOUNGMODULUS,BACKUP_ROLL_DIA,ROLLED_LENGTH_FOR_BACKUP_ROLLS,MU,TORQUE,AVERAGESIGMA,INPUTERROR,LUBWFLUP,LUBWFLLO,LUBOILFLUP,LUBOILFLLO,WORK_ROLL_SPEED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String insertQuery = "INSERT INTO FILE_FORMAT (LP,STAND_ID,MATID,XTIME,XLOC,ENTHICK,EXTHICK,ENTENS,EXTENS,ROLLFORCE,FSLIP,DAIAMETER,ROLLED_LENGTH_FOR_WORK_ROLLS,YOUNGMODULUS,BACKUP_ROLL_DIA,ROLLED_LENGTH_FOR_BACKUP_ROLLS,MU,TORQUE,AVERAGESIGMA,INPUTERROR,LUBWFLUP,LUBWFLLO,LUBOILFLUP,LUBOILFLLO,WORK_ROLL_SPEED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             // Préparation de la requête SQL avec la connexion à la base de données
             PreparedStatement stmt = conn.prepareStatement(insertQuery);
@@ -64,29 +64,30 @@ public class H2DatabaseConnection {
                 System.out.println(data[2]);
                 // Insertion des données dans la base de données
                 stmt.setInt(1, Integer.parseInt(data[0]));
-                stmt.setInt(2, Integer.parseInt(data[1]));
-                stmt.setDouble(3, Double.parseDouble(data[2]));
-                stmt.setDouble(4, Double.parseDouble(data[3]));
-                stmt.setDouble(5, Double.parseDouble(data[4]));
-                stmt.setDouble(6, Double.parseDouble(data[5]));
-                stmt.setDouble(7, Double.parseDouble(data[6]));
-                stmt.setDouble(8, Double.parseDouble(data[7]));
-                stmt.setDouble(9, Double.parseDouble(data[8]));
-                stmt.setDouble(10, Double.parseDouble(data[9]));
-                stmt.setDouble(11, Double.parseDouble(data[10]));
-                stmt.setInt(12, Integer.parseInt(data[11]));
-                stmt.setDouble(13, Double.parseDouble(data[12]));
-                stmt.setDouble(14, Double.parseDouble(data[13]));
-                stmt.setInt(15, Integer.parseInt(data[14]));
-                stmt.setDouble(16, Double.parseDouble(data[15]));
-                stmt.setDouble(17, Double.parseDouble(data[16]));
-                stmt.setDouble(18, Double.parseDouble(data[17]));
-                stmt.setDouble(19, Double.parseDouble(data[18]));
-                stmt.setDouble(20, Double.parseDouble(data[19]));
-                stmt.setDouble(21, Double.parseDouble(data[20]));
-                stmt.setDouble(22, Double.parseDouble(data[21]));
-                stmt.setDouble(23, Double.parseDouble(data[22]));
-                stmt.setDouble(24, Double.parseDouble(data[23]));
+                stmt.setString(2, stand);
+                stmt.setInt(3, Integer.parseInt(data[1]));
+                stmt.setDouble(4, Double.parseDouble(data[2]));
+                stmt.setDouble(5, Double.parseDouble(data[3]));
+                stmt.setDouble(6, Double.parseDouble(data[4]));
+                stmt.setDouble(7, Double.parseDouble(data[5]));
+                stmt.setDouble(8, Double.parseDouble(data[6]));
+                stmt.setDouble(9, Double.parseDouble(data[7]));
+                stmt.setDouble(10, Double.parseDouble(data[8]));
+                stmt.setDouble(11, Double.parseDouble(data[9]));
+                stmt.setDouble(12, Double.parseDouble(data[10]));
+                stmt.setInt(13, Integer.parseInt(data[11]));
+                stmt.setDouble(14, Double.parseDouble(data[12]));
+                stmt.setDouble(15, Double.parseDouble(data[13]));
+                stmt.setInt(16, Integer.parseInt(data[14]));
+                stmt.setDouble(17, Double.parseDouble(data[15]));
+                stmt.setDouble(18, Double.parseDouble(data[16]));
+                stmt.setDouble(19, Double.parseDouble(data[17]));
+                stmt.setDouble(20, Double.parseDouble(data[18]));
+                stmt.setDouble(21, Double.parseDouble(data[19]));
+                stmt.setDouble(22, Double.parseDouble(data[20]));
+                stmt.setDouble(23, Double.parseDouble(data[21]));
+                stmt.setDouble(24, Double.parseDouble(data[22]));
+                stmt.setDouble(25, Double.parseDouble(data[23]));
 
                 stmt.executeUpdate();
             }
@@ -100,20 +101,22 @@ public class H2DatabaseConnection {
             e.printStackTrace();
         }
     }
-    public void ComputeOrowan(int computeTime) throws SQLException, IOException, InterruptedException {
-        int time = 0;
+    public void ComputeOrowan(int computeTime, String stand_id, int mat_id) throws SQLException, IOException, InterruptedException {
+        double time = 1;
+        ArrayList<Double> times = new ArrayList<Double>();
         try {
-            // Établir une connexion à la base de données
 
+            // Établir une connexion à la base de données
+            String sqlQuery = String.format("SELECT ENTHICK, EXTHICK, ENTENS, EXTENS, DAIAMETER, YOUNGMODULUS, AVERAGESIGMA, MU, ROLLFORCE, FSLIP, XTIME FROM FILE_FORMAT WHERE STAND_ID = '%s' AND MATID = %d ;", stand_id, mat_id);
             // Préparer la requête SQL
-            String sql = "SELECT ENTHICK, EXTHICK, ENTENS, EXTENS, DAIAMETER, YOUNGMODULUS, AVERAGESIGMA, MU, ROLLFORCE, FSLIP,XTIME FROM FILE_FORMAT WHERE XTIME> 10 LIMIT 1";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            //String sql = "SELECT ENTHICK, EXTHICK, ENTENS, EXTENS, DAIAMETER, YOUNGMODULUS, AVERAGESIGMA, MU, ROLLFORCE, FSLIP,XTIME FROM FILE_FORMAT WHERE XTIME> 1 LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sqlQuery);
 
             // Exécuter la requête et récupérer les résultats
             ResultSet rs = stmt.executeQuery();
 
             // Écrire les résultats dans un fichier CSV
-            String filename = "input.csv";
+            String filename = "src/file/orowan/input.csv";
             FileWriter writer = new FileWriter(filename);
             writer.append("Cas\tHe\tHs\tTe\tTs\tDiam_WR\tWRyoung\toffset ini\tmu_ini\tForce\tG\n");
             // Parcourir les résultats et les afficher
@@ -128,6 +131,7 @@ public class H2DatabaseConnection {
                 double mu = rs.getDouble("MU");
                 double rollForce = rs.getDouble("ROLLFORCE");
                 double fSlip = rs.getDouble("FSLIP");
+                times.add(rs.getDouble("XTIME"));
 
                 String line = String.format("%d\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n",1, entHick, extHick,entEns, extEns, diameter, youngModulus, averageSigma, mu, rollForce, fSlip);
                 line =line.replaceAll(",",".");
@@ -147,9 +151,9 @@ public class H2DatabaseConnection {
         }
         OrowanLauncher a = new OrowanLauncher();
         a.launch("src/file/orowan/input.csv","src/file/orowan/output.csv");
-        ReadCSV_CSV_Output("tv.txt","\t");
+        ReadCSV_CSV_Output("src/file/orowan/output.csv","\t", stand_id, mat_id, times);
     }
-    public void ReadCSV_CSV_Output(String path, String tab){
+    public void ReadCSV_CSV_Output(String path, String tab, String stand_id ,int mat_id, ArrayList<Double> times){
 
         try {
             // Ouverture du fichier CSV
@@ -157,31 +161,36 @@ public class H2DatabaseConnection {
             BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
             csvReader.readLine();
             // Création de la requête SQL pour l'insertion des données
-            String insertQuery = "INSERT INTO CSV_OUTPUT_FILE (INT,Errors,OffsetYield,Friction,Rolling_Torque,Sigma_Moy,Sigma_Ini,Sigma_Out,Sigma_Max,FORCE_ERROR,SLIP_ERROR,HAS_CONVERGED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+            String insertQuery = "INSERT INTO CSV_OUTPUT_FILE (MATID,STAND_ID, XTIME, INT,Errors,OffsetYield,Friction,Rolling_Torque,Sigma_Moy,Sigma_Ini,Sigma_Out,Sigma_Max,FORCE_ERROR,SLIP_ERROR,HAS_CONVERGED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             // Préparation de la requête SQL avec la connexion à la base de données
             PreparedStatement stmt = conn.prepareStatement(insertQuery);
 
             // Lecture des données du fichier CSV ligne par ligne
             String row;
+            int i = 0;
             while ((row = csvReader.readLine()) != null) {
                 row = row.replaceAll(",", ".");
                 String[] data = row.split(tab);
                 // Insertion des données dans la base de données
-                stmt.setInt(1, Integer.parseInt(data[0]));
-                stmt.setString(2, data[1]);
-                stmt.setDouble(3, Double.parseDouble(data[2]));
-                stmt.setDouble(4, Double.parseDouble(data[3]));
-                stmt.setDouble(5, Double.parseDouble(data[4]));
-                stmt.setDouble(6, Double.parseDouble(data[5]));
-                stmt.setDouble(7, Double.parseDouble(data[6]));
-                stmt.setDouble(8, Double.parseDouble(data[7]));
-                stmt.setDouble(9, Double.parseDouble(data[8]));
-                stmt.setDouble(10, Double.parseDouble(data[9]));
-                stmt.setDouble(11, Double.parseDouble(data[10]));
-                stmt.setString(12,data[11]);
+                stmt.setInt(1, mat_id);
+                stmt.setString(2, stand_id);
+                stmt.setDouble(3,times.get(i));
+                stmt.setInt(4, Integer.parseInt(data[0]));
+                stmt.setString(5, data[1]);
+                stmt.setDouble(6, Double.parseDouble(data[2]));
+                stmt.setDouble(7, Double.parseDouble(data[3]));
+                stmt.setDouble(8, Double.parseDouble(data[4]));
+                stmt.setDouble(9, Double.parseDouble(data[5]));
+                stmt.setDouble(10, Double.parseDouble(data[6]));
+                stmt.setDouble(11, Double.parseDouble(data[7]));
+                stmt.setDouble(12, Double.parseDouble(data[8]));
+                stmt.setDouble(13, Double.parseDouble(data[9]));
+                stmt.setDouble(14, Double.parseDouble(data[10]));
+                stmt.setString(15,data[11]);
 
                 stmt.executeUpdate();
+                i++;
             }
             csvReader.close();
             System.out.println("Données insérées avec succès.");
@@ -192,6 +201,11 @@ public class H2DatabaseConnection {
             System.out.println("Erreur lors de l'insertion des données dans la base de données.");
             e.printStackTrace();
         }
+
+    }
+
+    public void Average(){
+
     }
 
 }
