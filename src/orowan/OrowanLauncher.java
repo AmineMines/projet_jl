@@ -8,10 +8,10 @@ public class OrowanLauncher {
 
     }
 
-    public void launch(String path) throws IOException, InterruptedException {
+    public void launch(String pathInput, String pathOutput) throws IOException, InterruptedException {
         //String arguments = "src/orowan/Orowan_x64.exe.exe";
         String executablePath = "path/to/OrowanConsole_x64.exe";
-        String[] arguments = {"src/orowan/Orowan_x64.exe.exe", "i", "c",path, "tv.txt"};
+        String[] arguments = {"src/orowan/Orowan_x64.exe.exe", "i", "c",pathInput, "pathOutput"};
 
         try {
             // Créer un processus pour l'exécutable
@@ -38,12 +38,12 @@ public class OrowanLauncher {
             stdin.write(System.lineSeparator().getBytes());
             stdin.flush();
 
-            input = path;
+            input = pathInput;
             stdin.write(input.getBytes());
             stdin.write(System.lineSeparator().getBytes());
             stdin.flush();
 
-            input = "1.txt";
+            input = pathOutput;
             stdin.write(input.getBytes());
             stdin.write(System.lineSeparator().getBytes());
             stdin.flush();

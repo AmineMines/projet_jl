@@ -113,7 +113,7 @@ public class H2DatabaseConnection {
             ResultSet rs = stmt.executeQuery();
 
             // Écrire les résultats dans un fichier CSV
-            String filename = "resultats.csv";
+            String filename = "input.csv";
             FileWriter writer = new FileWriter(filename);
             writer.append("Cas\tHe\tHs\tTe\tTs\tDiam_WR\tWRyoung\toffset ini\tmu_ini\tForce\tG\n");
             // Parcourir les résultats et les afficher
@@ -146,7 +146,7 @@ public class H2DatabaseConnection {
             System.err.println("Erreur lors de la connexion à la base de données : " + e.getMessage());
         }
         OrowanLauncher a = new OrowanLauncher();
-        a.launch("resultats.csv");
+        a.launch("src/file/orowan/input.csv","src/file/orowan/output.csv");
         ReadCSV_CSV_Output("tv.txt","\t");
     }
     public void ReadCSV_CSV_Output(String path, String tab){
