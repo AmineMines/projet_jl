@@ -106,7 +106,7 @@ public class H2DatabaseConnection {
             // Établir une connexion à la base de données
 
             // Préparer la requête SQL
-            String sql = "SELECT ENTHICK, ENTENS, EXTENS, DAIAMETER, YOUNGMODULUS, AVERAGESIGMA, MU, ROLLFORCE, FSLIP,XTIME FROM FILE_FORMAT WHERE XTIME> 0.200 LIMIT 1";
+            String sql = "SELECT ENTHICK, EXTHICK, ENTENS, EXTENS, DAIAMETER, YOUNGMODULUS, AVERAGESIGMA, MU, ROLLFORCE, FSLIP,XTIME FROM FILE_FORMAT WHERE XTIME> 10 LIMIT 1";
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             // Exécuter la requête et récupérer les résultats
@@ -119,6 +119,7 @@ public class H2DatabaseConnection {
             // Parcourir les résultats et les afficher
             while (rs.next()) {
                 double entHick = rs.getDouble("ENTHICK");
+                double extHick = rs.getDouble("EXTHICK");
                 double entEns = rs.getDouble("ENTENS");
                 double extEns = rs.getDouble("EXTENS");
                 double diameter = rs.getDouble("DAIAMETER");
@@ -127,10 +128,12 @@ public class H2DatabaseConnection {
                 double mu = rs.getDouble("MU");
                 double rollForce = rs.getDouble("ROLLFORCE");
                 double fSlip = rs.getDouble("FSLIP");
-                int xTime = rs.getInt("XTIME");
-                writer.append(String.format("%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\n", 1,entHick, entEns, extEns, diameter, youngModulus, averageSigma, mu, rollForce, fSlip, xTime));
+
+                String line = String.format("%d\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n",1, entHick, extHick,entEns, extEns, diameter, youngModulus, averageSigma, mu, rollForce, fSlip);
+                line =line.replaceAll(",",".");
+                writer.append(line);
                 // Faire quelque chose avec les données récupérées, par exemple les afficher
-                System.out.println("entHick: " + entHick + ", entEns: " + entEns + ", extEns: " + extEns + ", diameter: " + diameter + ", youngModulus: " + youngModulus + ", averageSigma: " + averageSigma + ", mu: " + mu + ", rollForce: " + rollForce + ", fSlip: " + fSlip + ", xTime: " + xTime);
+                System.out.println("entHick: " + entHick+ "ext" +extHick+ ", entEns: " + entEns + ", extEns: " + extEns + ", diameter: " + diameter + ", youngModulus: " + youngModulus + ", averageSigma: " + averageSigma + ", mu: " + mu + ", rollForce: " + rollForce + ", fSlip: " + fSlip + ", xTime: " );
             }
             writer.flush();
             writer.close();
@@ -144,8 +147,54 @@ public class H2DatabaseConnection {
         }
         OrowanLauncher a = new OrowanLauncher();
         a.launch("resultats.csv");
+        ReadCSV_CSV_Output("tv.txt","\t");
     }
+    public void ReadCSV_CSV_Output(String path, String tab){
 
+        try {
+            // Ouverture du fichier CSV
+            File csvFile = new File(path);
+            BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
+            csvReader.readLine();
+            // Création de la requête SQL pour l'insertion des données
+            String insertQuery = "INSERT INTO CSV_OUTPUT_FILE (INT,Errors,OffsetYield,Friction,Rolling_Torque,Sigma_Moy,Sigma_Ini,Sigma_Out,Sigma_Max,FORCE_ERROR,SLIP_ERROR,HAS_CONVERGED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+            // Préparation de la requête SQL avec la connexion à la base de données
+            PreparedStatement stmt = conn.prepareStatement(insertQuery);
+
+            // Lecture des données du fichier CSV ligne par ligne
+            String row;
+            while ((row = csvReader.readLine()) != null) {
+                System.out.println(row);
+                row = row.replaceAll(",", ".");
+                String[] data = row.split(tab);
+                System.out.println(data[10]);
+                // Insertion des données dans la base de données
+                stmt.setInt(1, Integer.parseInt(data[0]));
+                stmt.setString(2, data[1]);
+                stmt.setDouble(3, Double.parseDouble(data[2]));
+                stmt.setDouble(4, Double.parseDouble(data[3]));
+                stmt.setDouble(5, Double.parseDouble(data[4]));
+                stmt.setDouble(6, Double.parseDouble(data[5]));
+                stmt.setDouble(7, Double.parseDouble(data[6]));
+                stmt.setDouble(8, Double.parseDouble(data[7]));
+                stmt.setDouble(9, Double.parseDouble(data[8]));
+                stmt.setDouble(10, Double.parseDouble(data[9]));
+                stmt.setDouble(11, Double.parseDouble(data[10]));
+                stmt.setString(12,data[11]);
+
+                stmt.executeUpdate();
+            }
+            csvReader.close();
+            System.out.println("Données insérées avec succès.");
+        } catch (IOException e) {
+            System.out.println("Erreur lors de la lecture du fichier CSV.");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de l'insertion des données dans la base de données.");
+            e.printStackTrace();
+        }
+    }
 
 }
 

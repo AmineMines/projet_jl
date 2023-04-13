@@ -38,12 +38,12 @@ public class OrowanLauncher {
             stdin.write(System.lineSeparator().getBytes());
             stdin.flush();
 
-            input = "src/file/inv_cst.txt";
+            input = path;
             stdin.write(input.getBytes());
             stdin.write(System.lineSeparator().getBytes());
             stdin.flush();
 
-            input = "src/file/output2.txt";
+            input = "1.txt";
             stdin.write(input.getBytes());
             stdin.write(System.lineSeparator().getBytes());
             stdin.flush();
