@@ -165,10 +165,8 @@ public class H2DatabaseConnection {
             // Lecture des données du fichier CSV ligne par ligne
             String row;
             while ((row = csvReader.readLine()) != null) {
-                System.out.println(row);
                 row = row.replaceAll(",", ".");
                 String[] data = row.split(tab);
-                System.out.println(data[10]);
                 // Insertion des données dans la base de données
                 stmt.setInt(1, Integer.parseInt(data[0]));
                 stmt.setString(2, data[1]);
