@@ -228,7 +228,8 @@ public class H2DatabaseConnection {
         Statement stmt = conn.createStatement();
 
 
-        String query = String.format("SELECT XTIME,FRICTION,SIGMA_MOY,ROLLING_TORQUE FROM CSV_OUTPUT_FILE WHERE STAND_ID = '%s' AND MATID = %d", Stand_ID, mat_id);
+        String query = String.format("SELECT XTIME,FRICTION,SIGMA_MOY, FROM CSV_OUTPUT_FILE WHERE STAND_ID = '%s' AND MATID = %d", Stand_ID, mat_id);
+
         ResultSet rs = stmt.executeQuery(query);
 
         while (rs.next()) {
@@ -236,11 +237,20 @@ public class H2DatabaseConnection {
 
             double friction = rs.getDouble("FRICTION");
             double sigmaMoy = rs.getDouble("SIGMA_MOY");
-            double rollingTorque = rs.getDouble("ROLLING_TORQUE");
 
             xtimeList.add(xtime);
             frictionList.add(friction);
             sigmaMoyList.add(sigmaMoy);
+        }
+
+        String query2 = String.format("Select WORK_ROLL_SPEED FROM FILE_FORMAT WHERE STAND_ID = '%s' AND MATID = %d", Stand_ID, mat_id);
+
+        ResultSet rs2 = stmt.executeQuery(query2);
+
+        while (rs2.next()) {
+
+            double rollingTorque = rs2.getDouble("WORK_ROLL_SPEED");
+
             rollingTorqueList.add(rollingTorque);
 
         }
@@ -248,7 +258,7 @@ public class H2DatabaseConnection {
     System.out.println("XTIME List: " + xtimeList.size() +"2 "+xtimeList);
     System.out.println("FRICTION List: " + frictionList.size() +"2 "+frictionList);
     System.out.println("SIGMA_MOY List: " + sigmaMoyList.size() +"4 "+ sigmaMoyList);
-    System.out.println("ROLLING_TORQUE List: " + rollingTorqueList.size() +"2 "+ rollingTorqueList);
+    System.out.println("Rool speed List: " + rollingTorqueList.size() +"2 "+ rollingTorqueList);
 
         ArrayList<Double> timeList = new ArrayList<>();
         ArrayList<Double> valueList = new ArrayList<>();
@@ -286,7 +296,7 @@ public class H2DatabaseConnection {
         System.out.println("XTIME List Mean: " + xtimeListMean.size() +"2 "+xtimeListMean);
         System.out.println("FRICTION List Mean: " + frictionListMean.size() +"2 "+frictionListMean);
         System.out.println("SIGMA_MOY List MEAN: " + sigmaMoyListMean.size() +"4 "+ sigmaMoyListMean);
-        System.out.println("ROLLING_TORQUE List mean: " + rollingTorqueListMean.size() +"2 "+ rollingTorqueListMean);
+        System.out.println("Roll speed List mean: " + rollingTorqueListMean.size() +"2 "+ rollingTorqueListMean);
 
         resultat.add(xtimeListMean);
         resultat.add(frictionListMean);
