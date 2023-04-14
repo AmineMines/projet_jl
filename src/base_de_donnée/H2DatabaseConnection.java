@@ -254,7 +254,7 @@ public class H2DatabaseConnection {
         ArrayList<Double> valueList = new ArrayList<>();
 
 
-        int Time = 1;
+        int Time = computeTime;
 // Remplir les listes avec des valeurs de temps et de mesure
         for (int i = 0; i < xtimeList.size()-Time; i += Time) {
             xtimeValue.add(xtimeList.get(i));
@@ -266,11 +266,11 @@ public class H2DatabaseConnection {
         // définir la moyenne
         int sublistSize = 5;
 
-        for (int i = 0; i < xtimeList.size(); i += sublistSize) {
-            List<Double> xtimeSubList = xtimeList.subList(i, Math.min(i + sublistSize, xtimeList.size()));
-            List<Double> frictionSubList = frictionList.subList(i, Math.min(i + sublistSize, frictionList.size()));
-            List<Double> sigmaMoySubList = sigmaMoyList.subList(i, Math.min(i + sublistSize, sigmaMoyList.size()));
-            List<Double> rollingTorqueSubList = rollingTorqueList.subList(i, Math.min(i + sublistSize, rollingTorqueList.size()));
+        for (int i = 0; i < xtimeValue.size(); i += sublistSize) {
+            List<Double> xtimeSubList = xtimeValue.subList(i, Math.min(i + sublistSize, xtimeValue.size()));
+            List<Double> frictionSubList = frictionValue.subList(i, Math.min(i + sublistSize, frictionValue.size()));
+            List<Double> sigmaMoySubList = sigmaMoyValue.subList(i, Math.min(i + sublistSize, sigmaMoyValue.size()));
+            List<Double> rollingTorqueSubList = rollingTorqueValue.subList(i, Math.min(i + sublistSize, rollingTorqueValue.size()));
 
             double xtimeMean = Collections.max(xtimeSubList);
             double frictionMean = frictionSubList.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
@@ -282,7 +282,7 @@ public class H2DatabaseConnection {
             sigmaMoyListMean.add(sigmaMoyMean);
             rollingTorqueListMean.add(rollingTorqueMean);
         }
-
+        System.out.println("XTIME Value " + xtimeListMean.size() +"2 "+xtimeValue);
         System.out.println("XTIME List Mean: " + xtimeListMean.size() +"2 "+xtimeListMean);
         System.out.println("FRICTION List Mean: " + frictionListMean.size() +"2 "+frictionListMean);
         System.out.println("SIGMA_MOY List MEAN: " + sigmaMoyListMean.size() +"4 "+ sigmaMoyListMean);

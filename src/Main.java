@@ -10,7 +10,7 @@ public class Main {
        //a.launch();
         H2DatabaseConnection db = new H2DatabaseConnection();
         db.connection();
-        db.Average("F2",1939351,20.2);
+        db.Average("F2",1939351,2);
        // db.ComputeOrowan(1,"F3", 1939351);
        db.closeDatabase();
 
